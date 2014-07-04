@@ -5,78 +5,101 @@ Implementing Memento HTTP API for Invenio Digital Library Software
 Implement an [RFC 7089](http://www.mementoweb.org/guide/rfc/) Memento API: `TimeGate` and `TimeMap` endpoints for Invenio digital library. Implement an HTTP API and Web UI for browsing historical versions of Invenio records.
 
 ### Abstract
-Memento is a proposed technical framework for browsing and discovery of the historical versions of Web resources. This project aims to implement Memento API for Invenio digital library software, as well as the HTTP API and Web UI to facilitate and complement the Memento API.
+Memento is a proposed technical framework for browsing and discovering of the historical versions of Web resources. This project aims to implement Memento API for Invenio digital library software, as well as the HTTP API and Web UI to facilitate and complement the Memento API.
 
 ### Introduction
-Let `R` be original library record (resource), `G(R)` the `TimeGate` endpoint for datetime negotiation, `T(R)` the `TimeMap` endpoint for discovering the historical versions of `R`, `M(R, D)` the `Memento`, a historical version of `R` corresponding to the datetime `D`. As per the RFC, [pattern 2.1](http://www.mementoweb.org/guide/rfc/#Pattern2.1) Memento API is defined by following partial HTTP requests/responses:
+Let $R$ be original library record (resource), $G_R$ the *TimeGate* endpoint for datetime negotiation, $T_R$ the *TimeMap* endpoint for discovering the historical versions of $R$, $M_R(D)$ the `Memento`, a historical version of $R$ corresponding to the datetime $D$. Denote $\text{UA}$ the HTTP User-Agent. As per the RFC, Memento [pattern 2.1](http://www.mementoweb.org/guide/rfc/#Pattern2.1) API is defined by following partial HTTP requests/responses:
 
-#### `G` discovery for given `R`
+#### $G_R$ discovery for given $R$
 ```
 UA --- HTTP HEAD/GET ---------------------------------------> URI-R
-UA <-- HTTP 200; Link: URI-G(R) ----------------------------- URI-R
+UA <-- HTTP 200; Link: URI-G -------------------------------- URI-R
 ```
+$$
+\text{UA}\xrightarrow{\text{HTTP HEAD/GET}}\text{URI}(R) \\
+\text{UA}\xleftarrow[\text{Link: URI}(G_R)]{\text{HTTP 200}}\text{URI}(R)
+$$
 
-#### Datetime negotiation for given `G(R)`
+#### Datetime negotiation for given $G_R$
 ```
-UA --- HTTP HEAD/GET; Accept-Datetime: D -------------------> URI-G(R)
-UA <-- HTTP 302; Location: URI-M(R, D); Vary; Link:
-       URI-R,URI-T(R) --------------------------------------> URI-G(R)
-UA --- HTTP GET URI-M(R, D); Accept-Datetime: D ------------> URI-M(R, D)
+UA --- HTTP HEAD/GET; Accept-Datetime: D -------------------> URI-G
+UA <-- HTTP 302; Location: URI-M; Vary; Link:
+       URI-R,URI-T -----------------------------------------> URI-G
+UA --- HTTP GET URI-M; Accept-Datetime: D ------------------> URI-M
 UA <-- HTTP 200; Memento-Datetime: D; Link:
-       URI-R,URI-T(R),URI-G(R) ------------------------------ URI-M(R, D)
+       URI-R,URI-T,URI-G ------------------------------------ URI-M
 ```
 
-#### `T` discovery for given `G(R)`
+$$
+\text{UA}\xrightarrow{\text{HTTP HEAD/GET; Accept-Datetime: }D}\text{URI}(G_R) \\
+\text{UA}\xleftarrow[\text{ Vary; Link: URI}(R), \text{URI}(T_R)]{\text{HTTP 302; Location: URI}(M_R(D))}\text{URI}(G_R)
+$$
+$$
+\text{UA}\xrightarrow{\text{HTTP GET; Accept-Datetime: }D}\text{URI}(M_R(D)) \\
+\text{UA}\xleftarrow[\text{Link: URI}(R),\text{URI}(T_R),\text{URI}(G_R)]{\text{HTTP 200; Memento-Datetime: }D'}\text{URI}(M_R(D)) \\
+$$
+
+#### $T_R$ discovery for given $G_R$
 ```
-UA --- HTTP HEAD/GET ---------------------------------------> URI-G(R)
+UA --- HTTP HEAD/GET ---------------------------------------> URI-G
 UA <-- HTTP 302; Vary; Link:
-       URI-R,URI-T(R) --------------------------------------> URI-G(R)
+       URI-R,URI-T -----------------------------------------> URI-G
 ```
 
-#### Discovery of the historical versions for given `T(R)`
+$$
+\text{UA}\xrightarrow{\text{HTTP HEAD/GET}}\text{URI}(G_R) \\
+\text{UA}\xleftarrow[\text{Link: URI}(R),\text{URI}(T_R)]{\text{HTTP 302}}\text{URI}(G_R) \\
+$$
+
+#### Discovery of the historical versions for given $T(R)$
 ```
-UA --- HTTP GET URI-T(R)------------------------------------> URI-T(R)
-UA <-- HTTP 200 [*]------------------------------------------ URI-T(R)
+UA --- HTTP GET URI-T --------------------------------------> URI-T
+UA <-- HTTP 200 [*] ----------------------------------------- URI-T
 ```
 
-where the `[*]` response body may come in two forms. If the number of mementos is smaller than *N*, then it is in the form [1]:
+$$
+\text{UA}\xrightarrow{\text{HTTP HEAD/GET}}\text{URI}(T_R) \\
+\text{UA}\xleftarrow{\text{HTTP 200}\text{[*]}}\text{URI}(T_R) \\
+$$
+
+where the [\*] response body may come in two forms. If the number of mementos is smaller than *N*, then it is in the form [1]:
 ```
 <URI-R>;rel="original",
-<URI-T(R)>
+<URI-T_R>
   ; rel="self";type="application/link-format"
   ; from="D[start]"
   ; until="D[end]",
-<URI-G(R)>
+<URI-G_R>
   ; rel="timegate",
-<URI-M(R, D[start])>
+<URI-M_R(D_start)>
   ; rel="first memento"
-  ; datetime="D[start]"
+  ; datetime="D_start"
   ; license="URI-LICENSE"
-<URI-M(R, D[end])>
+<URI-M_R(D_end)>
   ; rel="last memento"
-  ; datetime="D[end]"
+  ; datetime="D_end"
   ; license="URI-LICENSE"
-<URI-M(R, D[i])>
+<URI-M_R(D_i)>
   ; rel="memento"
-  ; datetime="D[i]"
+  ; datetime="D_i"
   ; license="URI-LICENSE"
 ...
 ```
 
-Otherwise, `[*]` response body is in form [2], and it is an index providing links to paginated `T(R)[k]`:
+Otherwise, [\*] response body is an index response that provides links to paginated $T_R^k$, and is in form [2]:
 
 ```
 <URI-R>;rel="original",
-<URI-G(R)>
+<URI-G_R>
   ; rel="timegate",
-<URI-T(R)[k]>
+<URI-T_R^k>
   ; rel="self";type="application/link-format"
-  ; from="D[start(k)]"
-  ; until="D[end(k)]",
+  ; from="D_start_k"
+  ; until="D_end_k",
 ...
 ```
 
-The `GET/HEAD` request on `URI-T(R)[k]` is responded with `HTTP 200` of form [1]
+The `GET/HEAD` request on $\text{URI}(T_R^k)$ is responded with `HTTP 200` with response body in form [1].
 
 #### Memento Details:
 
@@ -92,8 +115,13 @@ By proposed API for Invenio the n-th version of record `R` is accessible at `URI
 
 The proposed Memento API for Invenio software defines Memento endpoints as follows:
 
-- `URI-R       = record/id(R)/`
-- `URI-G(R)    = record/timegate/id(R)/`
-- `URI-T(R)    = record/timemap/id(R)/`
-- `URI-T(R)[k] = record/timemap/k/id(R)/`
-- `URI-M(R, D) = record/id(R)/?version=V(R, D)`, where `V(R, D)` is the number of version of `R` which has its date closest to `D`
+$$
+\begin{align}
+\text{URI}(R) &= \text{record/}\text{ID}(R) \\
+\text{URI}(M_R(D)) &= \text{record/}\text{ID}(R)\text{/?revision=}D' \\
+\text{URI}(G_R) &= \text{timegate/record/timegate/}\text{ID}(R) \\
+\text{URI}(T_R) &= \text{timemap/record/}\text{ID}(R) \\
+\text{URI}(T_R^k) &= \text{timemap/}k\text{/record/ID}(R),
+\end{align}
+$$
+where $D'$ is the closest revision of $R$ whose date is less than $D$.
