@@ -155,7 +155,7 @@ $$
 $$
 where $D' = \text{sup} \{D_i~|~D_i<D, D_i - \text{dates of revisions of }R\}$ is the closest smaller than $D$ date of a revision of $R$.
 
-Additionally, citations, comments, files, etc. sections of $R$ found under ${\tt record/}\text{ID}(R){\tt /}\text{section}{\tt/}$ when accessed with ${\tt ?revision=}\ \text{REV}(D')$ parameter are to be displayed in a historical state as closely resembling their state as of record revision $\text{REV}(D')$ as possible.
+Additionally, citations, comments, files, etc. sections of $R$ found under ${\tt record/}\text{ID}(R){\tt /}\text{section}{\tt/}$ when accessed with ${\tt ?revision=}\ \text{REV}(D')$ parameter are to be displayed as closely resembling their state as of revision $\text{REV}(D')$ as possible.
 
 ### Implementation
 
