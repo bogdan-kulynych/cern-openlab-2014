@@ -5,7 +5,7 @@ Implementing Memento HTTP API for Invenio Digital Library Software
 Implement an [RFC 7089](http://www.mementoweb.org/guide/rfc/) Memento API: `TimeGate` and `TimeMap` endpoints for Invenio digital library. Implement an HTTP API and Web UI for browsing historical versions of Invenio records.
 
 ### Abstract
-Memento is a proposed technical framework for browsing and discovery of the historical versions of Web resources. This project aims to implement Memento API for Invenio digital library software, as well as the HTTP API and Web UI, as to facilitate and complement the Memento API.
+Memento is a proposed technical framework for browsing and discovery of the historical versions of Web resources. This project aims to implement Memento API for Invenio digital library software, as well as the HTTP API and Web UI to facilitate and complement the Memento API.
 
 ### Introduction
 Let `R` be original library record (resource), `G(R)` the `TimeGate` endpoint for datetime negotiation, `T(R)` the `TimeMap` endpoint for discovering the historical versions of `R`, `M(R, D)` the `Memento`, a historical version of `R` corresponding to the datetime `D`. As per the RFC, [pattern 2.1](http://www.mementoweb.org/guide/rfc/#Pattern2.1) Memento API is defined by following partial HTTP requests/responses:
@@ -38,7 +38,8 @@ UA <-- HTTP 302; Vary; Link:
 UA --- HTTP GET URI-T(R)------------------------------------> URI-T(R)
 UA <-- HTTP 200 [*]------------------------------------------ URI-T(R)
 ```
-Where the `[*]` response body may come in two forms. If the number of mementos is smaller than *N*, then it is in the form [1]:
+
+where the `[*]` response body may come in two forms. If the number of mementos is smaller than *N*, then it is in the form [1]:
 ```
 <URL-R>;rel="original",
 <URL-T(R)>
@@ -70,8 +71,8 @@ Otherwise, `[*]` response body is in form [2], and it is an index providing link
   ; rel="timegate",
 <URL-T(R)[k]>
   ; rel="self";type="application/link-format"
-  ; from="D[start]"
-  ; until="D[end]",
+  ; from="D[start(k)]"
+  ; until="D[end(k)]",
 ...
 ```
 
