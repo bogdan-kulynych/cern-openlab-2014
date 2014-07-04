@@ -5,7 +5,7 @@ Implementing Memento HTTP API for Invenio Digital Library Software
 Implement an [RFC 7089](http://www.mementoweb.org/guide/rfc/) Memento API: `TimeGate` and `TimeMap` endpoints for Invenio digital library. Implement an HTTP API and Web UI for browsing historical versions of Invenio records.
 
 ### Abstract
-Memento is a proposed technical framework for browsing and discovering of the historical versions of Web resources. This project aims to implement Memento API for Invenio digital library software, as well as the HTTP API and Web UI to facilitate and complement the Memento API.
+Memento is a technical framework for browsing and discovering of the historical versions of Web resources. This project aims to implement Memento API for Invenio digital library software, as well as the HTTP API and Web UI to facilitate and complement the Memento API.
 
 ### Introduction
 Let $R$ be original library record (resource), $G_R$ the *TimeGate* endpoint for datetime negotiation, $T_R$ the *TimeMap* endpoint for discovering the historical versions of $R$, $M_R(D)$ the `Memento`, a historical version of $R$ corresponding to the datetime $D$. Denote $\text{UA}$ the HTTP User-Agent. As per the RFC, Memento [pattern 2.1](http://www.mementoweb.org/guide/rfc/#Pattern2.1) API is defined by following partial HTTP requests/responses:
