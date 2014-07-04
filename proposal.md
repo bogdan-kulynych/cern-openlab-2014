@@ -1,6 +1,11 @@
 Implementing Memento HTTP API for Invenio Digital Library Software
 ==================================================================
 
+Bogdan Kulynych `bogdan.kulynych@gmail.com`
+
+*Supervisor*
+Tibor Šimko `tibor.simko@cern.ch`
+
 ### Project Specification
 Implement an [RFC 7089](http://www.mementoweb.org/guide/rfc/) Memento API: `TimeGate` and `TimeMap` endpoints for Invenio digital library. Implement an HTTP API and Web UI for browsing historical versions of Invenio records.
 
@@ -66,7 +71,8 @@ where the [\*] response body may come in two forms. If the number of mementos is
 ```
 <URI-R>;rel="original",
 <URI-T_R>
-  ; rel="self";type="application/link-format"
+  ; rel="self"
+  ; type="application/link-format"
   ; from="D[start]"
   ; until="D[end]",
 <URI-G_R>
@@ -101,27 +107,57 @@ Otherwise, [\*] response body is an index response that provides links to pagina
 
 The `GET/HEAD` request on $\text{URI}(T_R^k)$ is responded with `HTTP 200` with response body in form [1].
 
+#### HTTP Headers format
+
+- All dates $D$ in `Accept-Datetime` and `Memento-Datetime` are to be in standard [HTTP-date form](http://tools.ietf.org/html/rfc2616):
+
+```
+Accept-Datetime: Wed, 30 May 2007 18:47:52 GMT
+```
+- `Vary` header may only have the `accept-datetime` value for Invenio
+- `Link` header is to be of the following format:
+
+```
+ <URI-R>
+   ; rel="original",
+ <URI-G_R>
+   ; rel="timegate",
+ <URI-T_R>
+   ; rel="timemap";
+   ; type="application/link-format"
+   ; from="D[start]"
+   ; until="D[end]",
+ <URI-M_R(D)>
+   ; rel="memento"
+   ; datetime="D"
+  
+```
+
+Detailed specification can be found in [RFC 1123](http://www.mementoweb.org/guide/rfc/#RFC1123).
 #### Memento Details:
 
 - [Guide](http://www.mementoweb.org/guide/quick-intro/)
 - [RFC](http://www.mementoweb.org/guide/rfc/)
 
 
-### HTTP API for browsing historical versions of the record
-By proposed API for Invenio the n-th version of record `R` is accessible at `URI-R/?version=n`.
-
-
 ### Invenio Memento API
 
-The proposed Memento API for Invenio software defines Memento endpoints as follows:
+The proposed Memento API for Invenio defines Memento endpoints as follows:
 
 $$
 \begin{align}
-\text{URI}(R) &= \text{record/}\text{ID}(R) \\
-\text{URI}(M_R(D)) &= \text{record/}\text{ID}(R)\text{/?revision=}D' \\
-\text{URI}(G_R) &= \text{timegate/record/timegate/}\text{ID}(R) \\
-\text{URI}(T_R) &= \text{timemap/record/}\text{ID}(R) \\
-\text{URI}(T_R^k) &= \text{timemap/}k\text{/record/ID}(R),
+\text{URI}(R) &= {\tt record/}\text{ID}(R){\tt /} \\
+\text{URI}(M_R(D)) &= {\tt record/}\text{ID}(R){\tt /?revision= }\ \text{REV}(D') \\
+\text{URI}(G_R) &= {\tt timegate/record/timegate/}\text{ID}(R) \\
+\text{URI}(T_R) &= {\tt timemap/record/}\text{ID}(R) \\
+\text{URI}(T_R^k) &= {\tt timemap/}k{\tt /record/}\text{ID}(R),
 \end{align}
 $$
-where $D'$ is the closest revision of $R$ whose date is less than $D$.
+where $D' = \text{sup} \{D_i~|~D_i<D, D_i - \text{dates of revisions of }R\}$ is the closest smaller than $D$ date of a revision of $R$.
+
+Additionally, citations, comments, files, etc. sections of $R$ found under ${\tt record/}\text{ID}(R){\tt /}\text{section}{\tt/}$ when accessed with ${\tt ?revision=}\ \text{REV}(D')$ parameter are to be displayed in a historical state as closely resembling their state as of record revision $\text{REV}(D')$ as possible.
+
+### Implementation
+
+The `memento` module responsible for `timegate` and `timemap` endpoints is to be developed. The `records` module responsible for the `records` endpoint is to be extended with the functionality defined above.
+
