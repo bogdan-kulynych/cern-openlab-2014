@@ -33,7 +33,7 @@ UA <-- HTTP 302; Vary; Link:
        URI-R,URI-T(R) --------------------------------------> URI-G(R)
 ```
 
-#### Discovering the historical versions for given `T(R)`
+#### Discovery of the historical versions for given `T(R)`
 ```
 UA --- HTTP GET URI-T(R)------------------------------------> URI-T(R)
 UA <-- HTTP 200 [*]------------------------------------------ URI-T(R)
@@ -41,44 +41,59 @@ UA <-- HTTP 200 [*]------------------------------------------ URI-T(R)
 
 where the `[*]` response body may come in two forms. If the number of mementos is smaller than *N*, then it is in the form [1]:
 ```
-<URL-R>;rel="original",
-<URL-T(R)>
+<URI-R>;rel="original",
+<URI-T(R)>
   ; rel="self";type="application/link-format"
   ; from="D[start]"
   ; until="D[end]",
-<URL-G(R)>
+<URI-G(R)>
   ; rel="timegate",
-<URL-M(R, D[start])>
+<URI-M(R, D[start])>
   ; rel="first memento"
   ; datetime="D[start]"
-  ; license="URL-LICENSE"
-<URL-M(R, D[end])>
+  ; license="URI-LICENSE"
+<URI-M(R, D[end])>
   ; rel="last memento"
   ; datetime="D[end]"
-  ; license="URL-LICENSE"
-<URL-M(R, D[i])>
+  ; license="URI-LICENSE"
+<URI-M(R, D[i])>
   ; rel="memento"
   ; datetime="D[i]"
-  ; license="URL-LICENSE"
+  ; license="URI-LICENSE"
 ...
 ```
 
 Otherwise, `[*]` response body is in form [2], and it is an index providing links to paginated `T(R)[k]`:
 
 ```
-<URL-R>;rel="original",
-<URL-G(R)>
+<URI-R>;rel="original",
+<URI-G(R)>
   ; rel="timegate",
-<URL-T(R)[k]>
+<URI-T(R)[k]>
   ; rel="self";type="application/link-format"
   ; from="D[start(k)]"
   ; until="D[end(k)]",
 ...
 ```
 
-The `GET/HEAD` request on `URL-T(R)[k]` is responded with `HTTP 200` of form [1]
+The `GET/HEAD` request on `URI-T(R)[k]` is responded with `HTTP 200` of form [1]
 
 #### Memento Details:
 
 - [Guide](http://www.mementoweb.org/guide/quick-intro/)
 - [RFC](http://www.mementoweb.org/guide/rfc/)
+
+
+### HTTP API for browsing historical versions of the record
+By proposed API for Invenio the n-th version of record `R` is accessible at `URI-R/?version=n`.
+
+
+### Invenio Memento API
+
+The proposed Memento API for Invenio software defines Memento endpoints as follows:
+
+- `URI-R       = record/id(R)/`
+- `URI-G(R)    = record/timegate/id(R)/`
+- `URI-T(R)    = record/timemap/id(R)/`
+- `URI-T(R)[k] = record/timemap/k/id(R)/`
+- `URI-M(R, D) = record/id(R)/?version=V(R, D)`, where `V(R, D)` is the number of version of `R` which has its date closest to `D`
