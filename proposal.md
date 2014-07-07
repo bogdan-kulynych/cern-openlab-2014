@@ -136,8 +136,8 @@ Accept-Datetime: Wed, 30 May 2007 18:47:52 GMT
 Detailed specification can be found in [RFC 1123](http://www.mementoweb.org/guide/rfc/#RFC1123).
 #### Memento Details:
 
-- [Guide](http://www.mementoweb.org/guide/quick-intro/)
-- [RFC](http://www.mementoweb.org/guide/rfc/)
+- [Intro](http://www.mementoweb.org/guide/quick-intro/)
+- [RFC 7089](http://www.mementoweb.org/guide/rfc/)
 
 
 ### Invenio Memento API
@@ -155,7 +155,7 @@ $$
 $$
 where $D' = \text{sup} \{D_i~|~D_i<D, D_i - \text{dates of revisions of }R\}$ is the closest smaller than $D$ date of a revision of $R$.
 
-Additionally, citations, comments, files, etc. sections of $R$ found under ${\tt record/}\text{ID}(R){\tt /}\text{section}{\tt/}$ when accessed with ${\tt ?revision=}\ \text{REV}(D')$ parameter are to be displayed as closely resembling their state as of revision $\text{REV}(D')$ as possible.
+Additionally, citations, comments, files, etc. sections of $R$ found under ${\tt record/}\text{ID}(R){\tt /}\text{section}{\tt/}$ when accessed with ${\tt ?revision=}\ \text{REV}(D')$ parameter are to be displayed in a historical state as closely resembling their state as of record revision $\text{REV}(D')$ as possible.
 
 ### Implementation
 
