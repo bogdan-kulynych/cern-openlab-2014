@@ -164,7 +164,7 @@ URI(T_R[k]) = timemap/k/record/ID(R)
 
 where $D' = \text{sup} \{D_i~|~D_i<D, D_i - \text{dates of revisions of }R\}$ is the closest smaller than $D$ date of a revision of $R$.
 
-Additionally, sections for citations, comments, files, etc. found under ${\tt record/}\text{ID}(R){\tt /}\text{section}{\tt/}$ when accessed with ${\tt ?revision=}\ \text{REV}(D')$ parameter are to be displayed in a historical state as closely resembling their state as of revision $\text{REV}(D')$ as possible.
+Additionally, sections for citations, comments, files, etc. found under ${\tt record/}\text{ID}(R){\tt /}\text{section}{\tt/}$ when accessed with ${\tt ?wayback=}\ \text{REV}(D')$ parameter are to be displayed in a historical state as closely resembling their state as of revision $\text{REV}(D')$ as possible.
 
 ### Implementation
 
