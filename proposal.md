@@ -10,7 +10,7 @@ Tibor Šimko `tibor.simko@cern.ch`
 Implement an [RFC 7089](http://www.mementoweb.org/guide/rfc/) Memento API: `TimeGate` and `TimeMap` endpoints for Invenio digital library. Implement an HTTP API and Web UI for browsing historical versions of Invenio records.
 
 ### Abstract
-Memento is a technical framework for browsing and discovering of the historical versions of Web resources. This project aims to implement Memento API for Invenio digital library software, as well as the HTTP API and Web UI to facilitate and complement the Memento API.
+Memento is a framework for browsing and discovering of the historical versions of Web resources. This project aims to implement Memento API for Invenio digital library software, as well as the HTTP API and Web UI to facilitate and complement the Memento API.
 
 ### Introduction
 Let $R$ be original library record (resource), $G_R$ the *TimeGate* endpoint for datetime negotiation, $T_R$ the *TimeMap* endpoint for discovering the historical versions of $R$, $M_R(D)$ the `Memento`, a historical version of $R$ corresponding to the datetime $D$. Denote $\text{UA}$ the HTTP User-Agent. As per the RFC, Memento [pattern 2.1](http://www.mementoweb.org/guide/rfc/#Pattern2.1) API is defined by following partial HTTP requests/responses:
@@ -148,11 +148,20 @@ $$
 \begin{align}
 \text{URI}(R) &= {\tt record/}\text{ID}(R){\tt /} \\
 \text{URI}(M_R(D)) &= {\tt record/}\text{ID}(R){\tt /?revision= }\ \text{REV}(D') \\
-\text{URI}(G_R) &= {\tt timegate/record/timegate/}\text{ID}(R) \\
+\text{URI}(G_R) &= {\tt timegate/record/}\text{ID}(R) \\
 \text{URI}(T_R) &= {\tt timemap/record/}\text{ID}(R) \\
 \text{URI}(T_R^k) &= {\tt timemap/}k{\tt /record/}\text{ID}(R),
 \end{align}
 $$
+
+```haskell
+URI(R)      = record/ID(R)/
+URI(M_R(D)) = record/ID(R)/?revision=REV(D)
+URI(G_R)    = timegate/record/ID(R)
+URI(T_R)    = timemap/record/ID(R)
+URI(T_R[k]) = timemap/k/record/ID(R)
+```
+
 where $D' = \text{sup} \{D_i~|~D_i<D, D_i - \text{dates of revisions of }R\}$ is the closest smaller than $D$ date of a revision of $R$.
 
 Additionally, sections for citations, comments, files, etc. found under ${\tt record/}\text{ID}(R){\tt /}\text{section}{\tt/}$ when accessed with ${\tt ?revision=}\ \text{REV}(D')$ parameter are to be displayed in a historical state as closely resembling their state as of revision $\text{REV}(D')$ as possible.
@@ -161,5 +170,16 @@ Additionally, sections for citations, comments, files, etc. found under ${\tt re
 
 The `memento` module responsible for `timegate` and `timemap` endpoints is to be developed. The `records` module responsible for the `records` endpoint is to be extended with the functionality defined above.
 
-#### Versioning discussion
+#### Strategies
 
+The following implementation strategies identified:
+
+ - Version record master format (MARC, already implemented), generate metadata JSON from master format
+ - Version record master format and/or version JSON metdata in the JSON store
+
+Output:
+
+ - Generate record output (HTML, BibTex) from master
+ - Snapshot all output
+
+ 
