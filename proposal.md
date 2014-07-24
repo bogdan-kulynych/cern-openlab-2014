@@ -147,7 +147,7 @@ The proposed Memento API for Invenio defines Memento endpoints as follows:
 $$
 \begin{align}
 \text{URI}(R) &= {\tt record/}\text{ID}(R){\tt /} \\
-\text{URI}(M_R(D)) &= {\tt record/}\text{ID}(R){\tt /?revision= }\ \text{REV}(D') \\
+\text{URI}(M_R(D)) &= {\tt record/}\text{ID}(R){\tt /?wayback= }\ \text{REV}(D') \\
 \text{URI}(G_R) &= {\tt timegate/record/}\text{ID}(R) \\
 \text{URI}(T_R) &= {\tt timemap/record/}\text{ID}(R) \\
 \text{URI}(T_R^k) &= {\tt timemap/}k{\tt /record/}\text{ID}(R),
@@ -156,7 +156,7 @@ $$
 
 ```haskell
 URI(R)      = record/ID(R)/
-URI(M_R(D)) = record/ID(R)/?revision=REV(D)
+URI(M_R(D)) = record/ID(R)/?wayback=REV(D)
 URI(G_R)    = timegate/record/ID(R)
 URI(T_R)    = timemap/record/ID(R)
 URI(T_R[k]) = timemap/k/record/ID(R)
